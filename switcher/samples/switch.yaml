@@ -1,0 +1,14 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: switch
+spec:
+  template:
+    spec:
+      containers:
+      - image:  villardl/switcher-nodejs
+        env:
+        - name: EXPRESSION
+          value: event.data.assigned
+        - name: CASES
+          value: '["true", "false"]'

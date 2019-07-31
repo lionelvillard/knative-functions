@@ -1,0 +1,18 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: step1
+spec:
+  template:
+    spec:
+      containers:
+      - image:  villardl/transformer-nodejs
+        env:
+        - name: TRANSFORMER
+          value: |
+            ({
+              sequence: event.data.Sequence
+              message: `${event.data.Message} - Handled by ${env.STEP}`
+            })
+        - name: STEP
+          value: step1
