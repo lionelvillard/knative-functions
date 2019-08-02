@@ -66,21 +66,34 @@ try {
   process.exit(1)
 }
 
+
+const cloudevent = req => {
+  const event = {data: req.body}
+  for (const key in req.headers) {
+    if (key.startsWith('ce-')) {
+      event[key.substr(3)] = req.headers[key]
+    }
+  }
+  return event
+}
+
+
 app.post('/:caseNumber', (req, res) => {
   console.log('receiving Cloud Event')
-  console.log(JSON.stringify(req.body, null, 2))
+  const event = cloudevent(req)
+  console.log(JSON.stringify(event, null, 2))
 
   try {
     const caseNumber = parseInt(req.params.caseNumber)
-    const ndata = script.runInNewContext({event: req.body, caseNumber, env: process.env})
+    const ndata = script.runInNewContext({event, caseNumber, env: process.env})
 
     if (ndata) {
-      res.header(req.header).status(200).send(ndata)
+      res.header(req.headers).status(200).send(ndata)
     } else {
       res.status(200).end()
     }
   } catch (e) {
-    res.header(req.header).status(200).send({error: e.message})
+    res.header(req.headers).status(200).send({error: e.message})
   }
 })
 

@@ -1,6 +1,8 @@
 
 #!/usr/bin/env bash
 
+TAG=${TAG:-latest}
+
 functions=./*
 for f in $functions
 do
@@ -16,7 +18,7 @@ do
             name=$(basename $f)
             lang=$(basename $l)
             echo "building $name-$lang"
-            (cd $l && docker build -t $DOCKER_USER/$name-$lang . && docker push $DOCKER_USER/$name-$lang)
+            (cd $l && docker build -t $DOCKER_USER/$name-$lang:$TAG . && docker push $DOCKER_USER/$name-$lang:$TAG)
         fi
     done
 done

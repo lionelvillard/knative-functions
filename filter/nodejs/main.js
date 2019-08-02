@@ -29,7 +29,6 @@ if (!process.env.FILTER) {
     process.exit(1)
 }
 
-
 const code = `(${process.env.FILTER})`
 
 let script
@@ -41,20 +40,31 @@ try {
   process.exit(1)
 }
 
+const cloudevent = req => {
+  const event = {data: req.body}
+  for (const key in req.headers) {
+    if (key.startsWith('ce-')) {
+      event[key.substr(3)] = req.headers[key]
+    }
+  }
+  return event
+}
+
 app.post('/', (req, res) => {
   console.log('receiving Cloud Event')
-  console.log(JSON.stringify(req.body, null, 2))
+  const event = cloudevent(req)
+  console.log(JSON.stringify(event, null, 2))
 
   try {
-    const b = script.runInNewContext({event: req.body, env: process.env})
+    const b = script.runInNewContext({event, env: process.env})
 
     if (b) {
-      res.header(req.header).status(200).send(req.body)
+      res.header(req.headers).status(200).send(req.body)
     } else {
       res.status(200).end()
     }
   } catch (e) {
-    res.header(req.header).status(200).send({error: e.message})
+    res.header(req.headers).status(200).send({error: e.message})
   }
 })
 

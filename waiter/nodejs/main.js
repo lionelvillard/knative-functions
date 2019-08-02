@@ -18,30 +18,27 @@
 
 const express = require("express")
 const bodyParser = require("body-parser")
-const vm = require('vm')
+
 
 const app = express()
 app.use(bodyParser.json())
 
-// Check environment for inline code
-if (!process.env.TRANSFORMER) {
-    console.error("environment variable TRANSFORMER is missing.")
-    process.exit(1)
+// Check environment for SECONDS
+if (!process.env.SECONDS) {
+  console.error("environment variable SECONDS is missing.")
+  process.exit(1)
 }
 
-const code = process.env.TRANSFORMER
-
-let script
+let seconds
 try {
-   script = new vm.Script(code)
+  seconds = parseInt(process.env.SECONDS)
 } catch (e) {
-  console.error('invalid code')
-  console.log(code)
+  console.error("SECONDS must be an integer.")
   process.exit(1)
 }
 
 const cloudevent = req => {
-  const event = {data: req.body}
+  const event = { data: req.body }
   for (const key in req.headers) {
     if (key.startsWith('ce-')) {
       event[key.substr(3)] = req.headers[key]
@@ -50,17 +47,16 @@ const cloudevent = req => {
   return event
 }
 
-app.post("/", (req, res) => {
+const ms = seconds * 1000
+
+app.post('/', (req, res) => {
   console.log('receiving Cloud Event')
   const event = cloudevent(req)
   console.log(JSON.stringify(event, null, 2))
 
-  try {
-    const ndata = script.runInNewContext({event, env: process.env})
-    res.header(req.headers).status(200).send(ndata)
-  } catch (e) {
-    res.header(req.headers).status(200).send({error: e.message})
-  }
+  setTimeout(() => {
+    res.header(req.headers).status(200).send(req.body)
+  }, ms)
 })
 
 app.listen(8080)

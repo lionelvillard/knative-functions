@@ -2,6 +2,11 @@
 
 This project provides a collection of functions manipulating [Cloud Events](https://cloudevents.io).
 
+- [Filter](#filter)
+- [Transformer](#transformer)
+- [Switcher](#switcher)
+- [Waiter](#waiter)
+
 ## Filter
 
 A filter takes a cloud event as input, evaluates a predicate against it and returns the
@@ -11,8 +16,6 @@ unmodified event when the predicate return true, otherwise returns an empty resp
 
 - `FILTER`: an expression evaluating to a boolean
 - all environment variables are made available to the `FILTER` expression
-
-
 
 #### NodeJS Knative Serving Example
 
@@ -106,3 +109,24 @@ outh.containers.appdomain.cloud/1 -H "content-type:application/json" -d '{"data"
 ```
 
 produces nothing.
+
+## Waiter
+
+A waiter is an identity function waiting X seconds.
+
+#### NodeJS Knative Serving Example
+
+```yaml
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: wait
+spec:
+  template:
+    spec:
+      containers:
+      - image:  villardl/waiter-nodejs
+        env:
+        - name: SECONDS
+          value: "15"
+```
