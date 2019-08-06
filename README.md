@@ -2,24 +2,33 @@
 
 This project provides a collection of functions manipulating [Cloud Events](https://cloudevents.io).
 
-- [Filter](#filter)
+There are two categories of functions, the ones accepting only one set of parameters (standalone function), and the ones accepting multiple sets of parameters (dispatch function).
+
+The functions accepting multiple sets of parameters are compatible with the [Knative function controller](https://github.com/lionelvillard/knative-functions-controller).
+
+The functions are:
+
+- [Filter](#filter) (both [standalone](#standalone) and [dispatch](#dispatch) modes)
 - [Transformer](#transformer)
-- [Switcher](#switcher)
-- [Waiter](#waiter)
+- [Switch](#switcher)
+- [Wait](#waiter)
 
 ## Filter
 
 A filter takes a cloud event as input, evaluates a predicate against it and returns the
 unmodified event when the predicate return true, otherwise returns an empty response
 
-### Environment Variables
+Supported predicate languages:
+- nodejs
+
+### Standalone
+
+#### Environment Variables
 
 - `FILTER`: an expression evaluating to a boolean
 - all environment variables are made available to the `FILTER` expression
 
-#### NodeJS Knative Serving Example
-
-`FILTER` must be a valid node.js expression.
+##### Knative Serving Example (node.js)
 
 ```yaml
 apiVersion: serving.knative.dev/v1alpha1
@@ -34,6 +43,37 @@ spec:
         env:
         - name: FILTER
           value: event.data.assigned
+```
+
+`FILTER` must be a valid node.js expression.
+
+### Dispatch
+
+#### Installation
+
+```sh
+kubectl apply -f ./filter-dispatcher/config/
+```
+
+#### Example
+
+```yaml
+apiVersion: function.knative.dev/v1alpha1
+kind: Filter
+metadata:
+  name: filter
+spec:
+  language: nodejs
+  expression: event.data.assigned
+```
+
+After applying this configuration, check the status:
+
+```sh
+kubectl get filters.function.knative.dev
+
+NAME     READY   REASON   URL                                                        AGE
+filter   True             http://filter-filter.knative-functions.svc.cluster.local   13h
 ```
 
 ## Transformer
