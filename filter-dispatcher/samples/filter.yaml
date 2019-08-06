@@ -1,0 +1,7 @@
+apiVersion: function.knative.dev/v1alpha1
+kind: Filter
+metadata:
+  name: filter
+spec:
+  language: nodejs
+  expression: event.data.assigned

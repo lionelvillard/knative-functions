@@ -1,0 +1,19 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: filter-dispatcher-nodejs
+  namespace: knative-functions
+spec:
+  template:
+    spec:
+      containers:
+      - name: filter-dispatcher
+        image: villardl/filter-dispatcher-nodejs
+        volumeMounts:
+        - name: filter-dispatcher-nodejs
+          mountPath: /etc/config.json
+          subPath: config.json
+      volumes:
+        - name: filter-dispatcher-nodejs
+          configMap:
+            name: filter-dispatcher-nodejs
