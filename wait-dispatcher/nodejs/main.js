@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-const fs = require('fs')
 const express = require('express')
 const bodyParser = require('body-parser')
-const vm = require('vm')
+const fs = require('fs')
+
 
 const app = express()
 app.use(bodyParser.json())
@@ -43,7 +43,7 @@ try {
   process.exit(1)
 }
 
-let scripts = {}
+let ms = {}
 for (const host in svcs) {
   console.log(`adding ${host}`)
   let entry
@@ -55,18 +55,12 @@ for (const host in svcs) {
     process.exit(1)
   }
 
-  if (!entry.hasOwnProperty('expression')) {
-    console.error(`missing expression in ${JSON.stringify(entry, null, 2)}`)
+  if (!entry.hasOwnProperty('seconds')) {
+    console.error(`missing seconds in ${JSON.stringify(entry, null, 2)}`)
     process.exit(1)
   }
 
-  try {
-    scripts[host] = new vm.Script(entry.expression)
-  } catch (e) {
-    console.error(`invalid expression ${entry.expression}`)
-    console.log(e)
-    process.exit(1)
-  }
+  ms[host] = entry.seconds * 1000
 }
 
 const cloudevent = req => {
@@ -83,17 +77,10 @@ app.post('/', (req, res) => {
   console.log('receiving Cloud Event')
   const event = cloudevent(req)
   console.log(JSON.stringify(event, null, 2))
-  try {
-    const b = scripts[req.headers.host].runInNewContext({ event })
 
-    if (b) {
-      res.header(req.headers).status(200).send(req.body)
-    } else {
-      res.status(200).end()
-    }
-  } catch (e) {
-    res.header(req.headers).status(200).send({ error: e.message })
-  }
+  setTimeout(() => {
+    res.header(req.headers).status(200).send(req.body)
+  }, ms[req.host])
 })
 
 app.listen(8080)
