@@ -10,8 +10,8 @@ The functions are:
 
 - [Filter](#filter) (both [standalone](#standalone) and [dispatch](#dispatch) modes)
 - [Transformer](#transformer)
-- [Switch](#switcher)
-- [Wait](#waiter)
+- [Switch](#switch)
+- [Wait](#wait) (both [standalone](#standalone-1) and [dispatch](#dispatch-1) modes)
 
 ## Filter
 
@@ -85,10 +85,7 @@ A transformer takes a cloud event as input, transforms the data and returns a cl
 - `TRANSFORMER`: a function taking an `event` and returning data.
 - all environment variables are made available to the `TRANSFORMER` function
 
-#### NodeJS Knative Serving Example
-
-
-`TRANSFORMER` must be a valid node.js expression.
+#### Knative Serving Example (node.js)
 
 ```yaml
 apiVersion: serving.knative.dev/v1alpha1
@@ -111,11 +108,14 @@ spec:
           value: step1
 ```
 
-## Switcher
+`TRANSFORMER` must be a function taking one event and
+returning data.
 
-A switcher takes one switch expression and a list of case values. The switcher returns an event when the expression matches a case value AND the URL path matches the case number.
+## Switch
 
-#### NodeJS Knative Serving Example
+The Switch function takes one switch expression and a list of case values. The switch function returns an event when the expression matches a case value AND the URL path matches the case number.
+
+#### Knative Serving Example (node.js)
 
 ```yaml
 apiVersion: serving.knative.dev/v1alpha1
@@ -150,11 +150,17 @@ outh.containers.appdomain.cloud/1 -H "content-type:application/json" -d '{"data"
 
 produces nothing.
 
-## Waiter
+## Wait
 
-A waiter is an identity function waiting X seconds.
+The Wait function is the identity function waiting X seconds.
 
-#### NodeJS Knative Serving Example
+### Standalone
+
+#### Environment Variables
+
+- `SECONDS`: number of seconds to wait
+
+#### Knative Serving Example
 
 ```yaml
 apiVersion: serving.knative.dev/v1alpha1
@@ -169,4 +175,23 @@ spec:
         env:
         - name: SECONDS
           value: "15"
+```
+
+### Dispatch
+
+#### Installation
+
+```sh
+kubectl apply -f ./wait-dispatcher/config/
+```
+
+#### Example
+
+```yaml
+apiVersion: function.knative.dev/v1alpha1
+kind: Wait
+metadata:
+  name: wait-5
+spec:
+  seconds: 5
 ```

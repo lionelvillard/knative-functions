@@ -1,0 +1,7 @@
+apiVersion: function.knative.dev/v1alpha1
+kind: Wait
+metadata:
+  name: wait-5
+spec:
+  language: nodejs
+  seconds: 5
