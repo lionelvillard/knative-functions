@@ -18,8 +18,8 @@ The functions are:
 
 - [Filter](#filter) (both [standalone](#standalone) and [dispatch](#dispatch) modes)
 - [Transformer](#transformer)
-- [Switch](#switch)
-- [Wait](#wait) (both [standalone](#standalone-1) and [dispatch](#dispatch-1) modes)
+- [Switch](#switch) (both [standalone](#standalone-1) and [dispatch](#dispatch-1) modes)
+- [Wait](#wait) (both [standalone](#standalone-2) and [dispatch](#dispatch-2) modes)
 
 ## Filter
 
@@ -123,6 +123,8 @@ returning data.
 
 The Switch function takes one switch expression and a list of case values. The switch function returns an event when the expression matches a case value AND the URL path matches the case number.
 
+### Standalone
+
 #### Knative Serving Example (node.js)
 
 ```yaml
@@ -145,18 +147,41 @@ spec:
 Deploy and test it using curl:
 
 ```sh
-curl -X POST  http://switch.default.demo.us-s
+curl -X POST http://switch.default.demo.us-s
 outh.containers.appdomain.cloud/0 -H "content-type:application/json" -d '{"data":{"assigned":"true"}}'
 ```
 
 produces `{"data":{"assigned":"true"}}`
 
 ```sh
-curl -X POST  http://switch.default.demo.us-s
+curl -X POST http://switch.default.demo.us-s
 outh.containers.appdomain.cloud/1 -H "content-type:application/json" -d '{"data":{"assigned":"true"}}'
 ```
 
-produces nothing.
+produces nothing, as expected.
+
+### Dispatch
+
+#### Installation
+
+```sh
+kubectl apply -f ./switch-dispatcher/config/
+```
+
+#### Example
+
+```yaml
+apiVersion: function.knative.dev/v1alpha1
+kind: Switch
+metadata:
+  name: switch-data-assigned
+spec:
+  language: nodejs
+  expression: event.data.assigned
+  cases:
+    - true
+    - false
+```
 
 ## Wait
 
