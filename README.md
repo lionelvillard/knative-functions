@@ -2,9 +2,14 @@
 
 This project provides a collection of functions manipulating [Cloud Events](https://cloudevents.io).
 
-There are two categories of functions, the ones accepting only one set of parameters (standalone function), and the ones accepting multiple sets of parameters (dispatch function).
+There are two categories of functions:
+- the ones accepting only one set of parameters (standalone function), and 
+- the ones accepting multiple sets of parameters (dispatch function).
 
 The functions accepting multiple sets of parameters are compatible with the [Knative function controller](https://github.com/lionelvillard/knative-functions-controller).
+
+All functions are currently only _callable_ (synchronous). We are planning to add _composable_ (asynchronous) functions 
+the near future.
 
 The functions are:
 
