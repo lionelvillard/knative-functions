@@ -11,6 +11,9 @@ The functions accepting multiple sets of parameters are compatible with the [Kna
 All functions are currently only _callable_ (synchronous). We are planning to add _composable_ (asynchronous) functions 
 the near future.
 
+Function parameters are statically bound, either through environment variables for standalone functions or 
+through custom objects for dispatch functions. We are planning to also support dynamic variable bindings.
+
 The functions are:
 
 - [Filter](#filter) (both [standalone](#standalone) and [dispatch](#dispatch) modes)
