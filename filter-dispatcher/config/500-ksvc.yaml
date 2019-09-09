@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
       - name: filter-dispatcher
-        image: villardl/filter-dispatcher-nodejs
+        image: ../nodejs
         volumeMounts:
         - name: filters-nodejs
           mountPath: /etc/config.json
