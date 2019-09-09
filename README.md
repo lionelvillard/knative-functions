@@ -3,15 +3,15 @@
 This project provides a collection of functions manipulating [Cloud Events](https://cloudevents.io).
 
 There are two categories of functions:
-- the ones accepting only one set of parameters (standalone function), and 
+- the ones accepting only one set of parameters (standalone function), and
 - the ones accepting multiple sets of parameters (dispatch function).
 
 The functions accepting multiple sets of parameters are compatible with the [Knative function controller](https://github.com/lionelvillard/knative-functions-controller).
 
-All functions are currently only _callable_ (synchronous). We are planning to add _composable_ (asynchronous) functions 
+All functions are currently only _callable_ (synchronous). We are planning to add _composable_ (asynchronous) functions
 the near future.
 
-Function parameters are statically bound, either through environment variables for standalone functions or 
+Function parameters are statically bound, either through environment variables for standalone functions or
 through custom objects for dispatch functions. We are planning to also support dynamic variable bindings.
 
 The functions are:
@@ -60,7 +60,7 @@ spec:
 #### Installation
 
 ```sh
-kubectl apply -f ./filter-dispatcher/config/
+kone apply -f ./filter-dispatcher/config/
 ```
 
 #### Example
@@ -165,7 +165,7 @@ produces nothing, as expected.
 #### Installation
 
 ```sh
-kubectl apply -f ./switch-dispatcher/config/
+kone apply -f ./switch-dispatcher/config/
 ```
 
 #### Example
@@ -215,7 +215,7 @@ spec:
 #### Installation
 
 ```sh
-kubectl apply -f ./wait-dispatcher/config/
+kone apply -f ./wait-dispatcher/config/
 ```
 
 #### Example

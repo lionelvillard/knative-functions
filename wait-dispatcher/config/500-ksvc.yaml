@@ -7,7 +7,7 @@ spec:
   template:
     spec:
       containers:
-      - image: villardl/wait-dispatcher-nodejs
+      - image: ../nodejs
         volumeMounts:
         - name: waits-nodejs
           mountPath: /etc/config.json

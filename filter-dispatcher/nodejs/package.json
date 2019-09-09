@@ -1,4 +1,5 @@
 {
+  "name": "filter-dispatcher",
   "scripts": {
     "start": "node main.js"
   },

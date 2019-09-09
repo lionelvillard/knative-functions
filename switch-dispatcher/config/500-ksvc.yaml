@@ -7,7 +7,7 @@ spec:
   template:
     spec:
       containers:
-      - image: villardl/switches-dispatcher-nodejs
+      - image: ../nodejs
         volumeMounts:
         - name: switches-nodejs
           mountPath: /etc/config.json
