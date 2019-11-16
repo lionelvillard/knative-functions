@@ -1,26 +1,53 @@
 # Knative Eventing Functions
+[![Build Status](https://travis-ci.org/lionelvillard/knative-functions.svg?branch=master)](https://travis-ci.org/lionelvillard/knative-functions)
 
 This project provides a collection of functions manipulating [Cloud Events](https://cloudevents.io).
-
-There are two categories of functions:
-- the ones accepting only one set of parameters (standalone function), and
-- the ones accepting multiple sets of parameters (dispatch function).
-
-The functions accepting multiple sets of parameters are compatible with the [Knative function controller](https://github.com/lionelvillard/knative-functions-controller).
 
 All functions are currently only _callable_ (synchronous). We are planning to add _composable_ (asynchronous) functions
 the near future.
 
-Function parameters are statically bound, either through environment variables for standalone functions or
-through custom objects for dispatch functions. We are planning to also support dynamic variable bindings.
+
+## Installation
+
+You first need to install the [Knative Eventing Function Controller](https://github.com/lionelvillard/knative-functions-controller):
+
+```sh
+kubectl apply -f https://github.com/lionelvillard/knative-functions-controller/releases/download/v0.1.2/function.yaml
+```
+
+Then install the function library:
+
+```sh
+kubectl apply -f https://github.com/lionelvillard/knative-functions/releases/download/v0.1.0/functions.yaml
+```
+
+## Functions
 
 The functions are:
 
+- [Wait](#wait)
+<!--
 - [Filter](#filter) (both [standalone](#standalone) and [dispatch](#dispatch) modes)
 - [Transformer](#transformer)
 - [Switch](#switch) (both [standalone](#standalone-1) and [dispatch](#dispatch-1) modes)
-- [Wait](#wait) (both [standalone](#standalone-2) and [dispatch](#dispatch-2) modes)
+-->
 
+### Wait
+
+The `Wait` function forward events after X seconds.
+
+#### Example
+
+```yaml
+apiVersion: functions.knative.dev/v1alpha1
+kind: Wait
+metadata:
+  name: wait-5
+spec:
+  seconds: 5
+```
+
+<!--
 ## Filter
 
 A filter takes a cloud event as input, evaluates a predicate against it and returns the
@@ -182,49 +209,4 @@ spec:
     - true
     - false
 ```
-
-## Wait
-
-The Wait function is the identity function waiting X seconds.
-
-### Standalone
-
-#### Environment Variables
-
-- `SECONDS`: number of seconds to wait
-
-#### Knative Serving Example
-
-```yaml
-apiVersion: serving.knative.dev/v1alpha1
-kind: Service
-metadata:
-  name: wait
-spec:
-  template:
-    spec:
-      containers:
-      - image:  villardl/waiter-nodejs
-        env:
-        - name: SECONDS
-          value: "15"
-```
-
-### Dispatch
-
-#### Installation
-
-```sh
-kone apply -f ./wait-dispatcher/config/
-```
-
-#### Example
-
-```yaml
-apiVersion: function.knative.dev/v1alpha1
-kind: Wait
-metadata:
-  name: wait-5
-spec:
-  seconds: 5
-```
+-->
