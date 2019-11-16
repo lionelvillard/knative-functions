@@ -1,0 +1,6 @@
+apiVersion: functions.knative.dev/v1alpha1
+kind: Wait
+metadata:
+  name: wait-2
+spec:
+  seconds: 2
