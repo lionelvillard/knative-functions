@@ -1,0 +1,6 @@
+{
+  "name": "filter",
+  "kone": {
+    "defaultBaseImage": "docker.io/knativefunctions/function"
+  }
+}

@@ -16,9 +16,11 @@ kind: CustomResourceDefinition
 metadata:
   name: filters.functions.knative.dev
   labels:
-    knative.dev/crd-install: "true"
+    functions.knative.dev/crd: "true"
+  annotations:
+    functions.knative.dev/image: ../src
 spec:
-  group: function.knative.dev
+  group: functions.knative.dev
   version: v1alpha1
   names:
     kind: Filter
@@ -28,8 +30,7 @@ spec:
     - all
     - knative
     - eventing
-    - messaging
-    - function
+    - functions
   scope: Namespaced
   subresources:
     status: {}
@@ -51,12 +52,7 @@ spec:
       properties:
         spec:
           required:
-            - language
             - expression
           properties:
-            language:
-              type: string
-              enum:
-              - nodejs
             expression:
               type: string

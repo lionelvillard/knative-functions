@@ -31,8 +31,7 @@ spec:
     - all
     - knative
     - eventing
-    - messaging
-    - function
+    - functions
   scope: Namespaced
   subresources:
     status: {}
