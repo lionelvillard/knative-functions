@@ -14,19 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# safer bash: https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-set -euo pipefail
+set -e
 
-LIBROOT=$(dirname $BASH_SOURCE[0])
-source $LIBROOT/utils.sh
-LIBROOT=$(u::abs_path $LIBROOT)
-source $LIBROOT/string.sh
-source $LIBROOT/istio.sh
-source $LIBROOT/k8s.sh
-source $LIBROOT/knative.sh
-source $LIBROOT/minikube.sh
-source $LIBROOT/kind.sh
-source $LIBROOT/semver.sh
-source $LIBROOT/couchdb.sh
-source $LIBROOT/ic.sh
-source $LIBROOT/github.sh
+ROOT=$(dirname $BASH_SOURCE[0])/..
+source $ROOT/github.sh
+
+github::create_release $GITHUB_TOKEN lionelvillard/bash-library v0.1.0
+github::upload_asset $GITHUB_TOKEN lionelvillard/bash-library v0.1.0 $ROOT/test/dummy.yaml
