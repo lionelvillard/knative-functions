@@ -18,7 +18,7 @@ kubectl apply -f https://github.com/lionelvillard/knative-functions-controller/r
 Then install the function library:
 
 ```sh
-kubectl apply -f https://github.com/lionelvillard/knative-functions/releases/download/v0.1.0/functions.yaml
+kubectl apply -f https://github.com/lionelvillard/knative-functions/releases/download/v0.2.0/functions.yaml
 ```
 
 ## Functions
