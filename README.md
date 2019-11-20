@@ -26,8 +26,8 @@ kubectl apply -f https://github.com/lionelvillard/knative-functions/releases/dow
 The functions are:
 
 - [Wait](#wait)
+- [Filter](#filter)
 <!--
-- [Filter](#filter) (both [standalone](#standalone) and [dispatch](#dispatch) modes)
 - [Transformer](#transformer)
 - [Switch](#switch) (both [standalone](#standalone-1) and [dispatch](#dispatch-1) modes)
 -->
@@ -47,69 +47,25 @@ spec:
   seconds: 5
 ```
 
-<!--
-## Filter
+### Filter
 
 A filter takes a cloud event as input, evaluates a predicate against it and returns the
-unmodified event when the predicate return true, otherwise returns an empty response
+unmodified event when the predicate return true, otherwise returns an empty response.
 
-Supported predicate languages:
-- nodejs
+The predicate must be a Javascript expression. It is evaluated in a sandbox with the variable [`event`](https://github.com/cloudevents/spec/blob/v1.0/json-format.md)
 
-### Standalone
-
-#### Environment Variables
-
-- `FILTER`: an expression evaluating to a boolean
-- all environment variables are made available to the `FILTER` expression
-
-##### Knative Serving Example (node.js)
+### Example
 
 ```yaml
-apiVersion: serving.knative.dev/v1alpha1
-kind: Service
-metadata:
-  name: filter
-spec:
-  template:
-    spec:
-      containers:
-      - image:  villardl/filter-nodejs
-        env:
-        - name: FILTER
-          value: event.data.assigned
-```
-
-`FILTER` must be a valid node.js expression.
-
-### Dispatch
-
-#### Installation
-
-```sh
-kone apply -f ./filter-dispatcher/config/
-```
-
-#### Example
-
-```yaml
-apiVersion: function.knative.dev/v1alpha1
+apiVersion: functions.knative.dev/v1alpha1
 kind: Filter
 metadata:
   name: filter
 spec:
-  language: nodejs
   expression: event.data.assigned
 ```
 
-After applying this configuration, check the status:
-
-```sh
-kubectl get filters.function.knative.dev
-
-NAME     READY   REASON   URL                                                        AGE
-filter   True             http://filter-filter.knative-functions.svc.cluster.local   13h
-```
+<!--
 
 ## Transformer
 

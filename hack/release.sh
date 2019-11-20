@@ -26,7 +26,7 @@ mkdir -p release
 
 touch release/functions.yaml
 
-artifacts=('wait')
+artifacts=('wait' 'filter')
 
 for artifact in "${artifacts[@]}"; do
     kone resolve -f $ROOT/${artifact}/config -t $TAG >> release/functions.yaml

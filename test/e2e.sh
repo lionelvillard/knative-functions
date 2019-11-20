@@ -26,3 +26,4 @@ u::header "Starting kind cluster"
 
 u::header "Testing..."
 $ROOT/wait/test.sh
+$ROOT/filter/test.sh
