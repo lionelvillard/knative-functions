@@ -26,7 +26,7 @@ trap cleanup EXIT
 
 u::testsuite "Function"
 
-cd $ROOT/runtimes/nodejs
+cd $ROOT/sidecars/nodejs
 
 node main.js &
 pid=$!

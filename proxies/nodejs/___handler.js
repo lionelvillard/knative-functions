@@ -8,6 +8,8 @@ const dispatch = typeof fn !== 'function'
 
 const functionConfig = readFunctionConfig()
 
+const redisClient = (functionConfig && functionConfig.redis) ? createRedisClient(functionConfig.redis) : null
+
 // handle POST request
 async function handleRequest(req, res) {
     const parsedurl = url.parse(req.url)
@@ -19,11 +21,20 @@ async function handleRequest(req, res) {
 
     // Resolve actual function
     let actualfn = resolvefn(req, res)
-    if (!actualfn)
+    if (!actualfn) {
+        res.statusCode = 404
+        res.end()
         return
+    }
 
     // http => event
     const event = httptoce(req.headers)
+
+    const context = {}
+
+    if (redisClient) {
+        context.redisClient = redisClient
+    }
 
     // apply static bindings
     const staticParams = paramsfromconfig(req.headers['host'])
@@ -32,7 +43,7 @@ async function handleRequest(req, res) {
     const httpParams = httptoparams(parsedurl)
 
     // Merge
-    const params = { ...staticParams, ...httpParams }
+    context.params = { ...staticParams, ...httpParams }
 
     // Setup event handlers
     const body = []
@@ -55,7 +66,7 @@ async function handleRequest(req, res) {
         }
 
         try {
-            const reply = await actualfn(event, params)
+            const reply = await actualfn(context, event)
 
             if (reply) {
                 const headers = cetohttp(reply)
@@ -142,13 +153,7 @@ function trimRight(str, ch) {
 function resolvefn(req, res) {
     if (dispatch) {
         const fname = req.url.substr(1)
-        const actualfn = fn[fname]
-        if (!actualfn) {
-            res.statusCode = 404
-            res.end()
-            return null
-        }
-        return actualfn
+        return fn[fname]
     }
     return fn
 }
@@ -166,6 +171,49 @@ function readFunctionConfig() {
         return JSON.parse(bytes)
     } catch (e) {
         console.error('error parsing the config file')
+        console.log(e)
+        return null
+    }
+}
+
+function createRedisClient(options) {
+    const Module = require('module')
+    const path = require('path')
+    const {promisify} = require('util');
+
+    const internalModulesPath = path.join(__dirname, '___modules')
+    const _resolveFilename = Module._resolveFilename
+
+    Module._resolveFilename = (request, parent) => {
+        if (request === 'double-ended-queue') {
+            return path.join(internalModulesPath, 'redis', 'double-ended-queue', 'js', 'deque.js')
+        }
+        if (request === 'redis-parser' || request === 'redis-commands') {
+            return path.join(internalModulesPath, request, 'index.js')
+        }
+        return  _resolveFilename(request, parent)
+    }
+    const redis = require('./___modules/redis')
+    Module._resolveFilename = _resolveFilename
+
+    try {
+        const client = redis.createClient(options)
+
+        // TODO: better way.
+        client.on('error', err => {
+            console.log('error ' + err);
+        })
+
+        const asyncClient = {
+            get: promisify(client.get).bind(client),
+            set:  promisify(client.set).bind(client),
+            quit: promisify(client.quit).bind(client),
+            end: client.end
+        }
+
+        return asyncClient
+    } catch (e) {
+        console.log('error while creating redis client')
         console.log(e)
         return null
     }

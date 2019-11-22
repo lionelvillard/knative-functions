@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-module.exports = (event, params) => {
-    console.log(`waiting ${params.seconds} seconds`)
-    return new Promise( resolve => setTimeout(() => resolve(event), params.seconds * 1000) )
+module.exports = (context, event)  => {
+    console.log(`waiting ${context.params.seconds} seconds`)
+    return new Promise( resolve => setTimeout(() => resolve(event), context.params.seconds * 1000) )
 }
