@@ -13,19 +13,30 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-ROOT=$(dirname $BASH_SOURCE[0])/..
+ROOT=$(dirname $BASH_SOURCE[0])/../../..
 source $ROOT/hack/lib/library.sh
 
-docker login -p $DOCKER_PASS -u $DOCKER_USER docker.io
+function cleanup {
+    if [[ -n $pid ]]; then
+        kill $pid
+        unset pid
+    fi
+}
+trap cleanup EXIT
 
-serving_version=$1
-eventing_version=$2
+u::testsuite "Function"
 
-u::header "Starting kind cluster"
-. $ROOT/hack/setup-knative-kind.sh $1 $2
+cd $ROOT/runtimes/nodejs
 
-u::header "Testing..."
-$ROOT/wait/test.sh
-$ROOT/filter/test.sh
+node main.js &
+pid=$!
 
-$ROOT/test/runtimes/nodejs/test.sh
+sleep 1
+
+printf "Sending 10000 events "
+hey -n 10000 -m POST -d '{"message":"hello"}' http://localhost:8080
+
+printf "Sending 1000 events 1MB body "
+hey -n 1000 -m POST -D ../../test/src/payload-1MB.json http://localhost:8080
+
+u::header "cleanup"
