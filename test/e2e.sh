@@ -28,4 +28,4 @@ u::header "Testing..."
 $ROOT/wait/test.sh
 $ROOT/filter/test.sh
 
-$ROOT/test/runtimes/nodejs/test.sh
+$ROOT/test/proxies/nodejs/test.sh

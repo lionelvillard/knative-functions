@@ -1,6 +1,6 @@
 # Knative Eventing Function
 
-This runtime simplifies writing Node.js [Knative Eventing Functions](https://github.com/knative/eventing/blob/master/docs/spec/interfaces.md#callable).
+This sidecar simplifies writing Node.js [Knative Eventing Functions](https://github.com/knative/eventing/blob/master/docs/spec/interfaces.md#callable).
 
 It is designed:
 - to be used as a base image for [kone](https://github.com/ibm/kone) to eliminate lots of boilerplace code.
@@ -13,7 +13,7 @@ Let's start with the identity function:
 `function.js`:
 
 ```js
-module.exports = event => event
+module.exports = (context, event) => event
 ```
 
 The function:
@@ -81,11 +81,9 @@ The Knative Eventing Function may receive parameters as input, in addition to th
 For instance, consider the `wait` function:
 
 ```js
-module.exports = (event, params) => new Promise(
-  resolve => setTimeout(() => resolve(event), params.seconds * 1000) )
+module.exports = (context, params) => new Promise(
+  resolve => setTimeout(() => resolve(event), context.params.seconds * 1000) )
 ```
-
-This function takes a CloudEvent and parameters.
 
 ### Passing Parameters via URL Query String
 
@@ -137,4 +135,26 @@ spec:
           configMap:
             name: wait-config  # name of the config map
 ```
+
+## Stateful Function
+
+Knative Eventing Function may rely on external state.
+
+### Configuring Redis
+
+To use Redis as backing store, add this to `___config.json`:
+
+```json
+{
+  "redis": { ... options }
+}
+```
+
+
+
+
+
+
+
+
 
