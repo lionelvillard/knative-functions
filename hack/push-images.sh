@@ -22,4 +22,4 @@ source $ROOT/hack/lib/library.sh
 export KO_DOCKER_REPO=docker.io/knativefunctions
 
 cd $ROOT
-kone publish src/function
+kone publish proxies/nodejs
