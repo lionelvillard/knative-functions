@@ -1,6 +1,6 @@
 # Knative Eventing Function
 
-This sidecar simplifies writing Node.js [Knative Eventing Functions](https://github.com/knative/eventing/blob/master/docs/spec/interfaces.md#callable).
+This proxy simplifies writing Node.js [Knative Eventing Functions](https://github.com/knative/eventing/blob/master/docs/spec/interfaces.md#callable).
 
 It is designed:
 - to be used as a base image for [kone](https://github.com/ibm/kone) to eliminate lots of boilerplace code.
@@ -19,7 +19,7 @@ module.exports = (context, event) => event
 The function:
 - must reside in the file named `function.js`.
 - must be exported.
-- should take a CloudEvent as input. The CloudEvent follows the [JSON Event Format](https://github.com/cloudevents/spec/blob/v1.0/json-format.md#json-event-format-for-cloudevents---version-10).
+- should take a context and CloudEvent as input. The CloudEvent follows the [JSON Event Format](https://github.com/cloudevents/spec/blob/v1.0/json-format.md#json-event-format-for-cloudevents---version-10).
 -  can optionally return a CloudEvent. If it does the event is send back to the Knative Eventing system.
 
 In order to deploy it, we need to tell `kone` what image name to give to the function and what base image to use:
@@ -65,12 +65,12 @@ Then deploy it using `kone`, which takes care of making the docker image for the
 kone apply -f config/identity-ksvc.yaml
 ```
 
-## Asynchronous Function
+## Node.js Promises
 
 The Knative Eventing Function may be asynchronous:
 
 ```js
-module.exports = event =>
+module.exports = (_, event) =>
   new Promise( resolve => setTimeout(() => resolve(event), 1000) )
 ```
 
@@ -81,7 +81,7 @@ The Knative Eventing Function may receive parameters as input, in addition to th
 For instance, consider the `wait` function:
 
 ```js
-module.exports = (context, params) => new Promise(
+module.exports = (context, event) => new Promise(
   resolve => setTimeout(() => resolve(event), context.params.seconds * 1000) )
 ```
 
