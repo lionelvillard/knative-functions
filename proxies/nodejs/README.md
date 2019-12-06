@@ -85,7 +85,7 @@ module.exports = (context, event) => new Promise(
   resolve => setTimeout(() => resolve(event), context.params.seconds * 1000) )
 ```
 
-### Passing Parameters via URL Query String
+### Passing Parameter Values via URL Query String
 
 When present the URL query string is converted to a collection of key value pairs and pass to the function.
 
@@ -98,9 +98,46 @@ $ curl -H "host: wait.default.example.com" http://$ISTIO_IP?seconds=5 -d '{"msg"
 {"msg":"hello"}
 ```
 
-### Default Parameter Value
+### Default Parameter Values via Environment Variables
 
-Default values are expected to be stored in the file named `___config.json`. This file must be an object mapping host name to parameters. For instance:
+Default parameter values can be specified as environment variables. For instance:
+
+```yaml
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: wait
+spec:
+  template:
+    spec:
+      containers:
+        - image: ../src/wait # points to the directory containing package.json
+          env:
+            - name: P_SECONDS  # corresponds to the parameter named seconds
+              value: "5"
+```
+
+Default values can be overriden by URL query string.
+
+## Managing State
+
+Knative Eventing Function may rely on external state.
+
+### Configuring Redis
+
+To use Redis as backing store, add this to `___config.json`:
+
+```json
+{
+  "redis": { ... options }
+}
+```
+
+## Function Controller Compatibility
+
+The [Function Controller](https://github.com/lionelvillard/knative-functions-controller) enables multiple configurations per
+function, one per [host](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host). It generates a ConfigMap containing one
+entry named `___config.json` with a JSON value mapping host to default parameter value. For instance:
 
 ```json
 {
@@ -110,9 +147,13 @@ Default values are expected to be stored in the file named `___config.json`. Thi
 }
 ```
 
-Default parameter values are applied first and are overriden by parameters passed in the URL query string.
+The order in which a parameter value is determined is the following:
+- environment variable
+- overriden by host default value (if exists)
+- overriden by URL query string (if exists)
 
-#### Mounting ConfigMap
+
+### Mounting ConfigMap
 
 Default parameter values stored in ConfigMap can be mounted in the service as follows:
 
@@ -135,24 +176,6 @@ spec:
           configMap:
             name: wait-config  # name of the config map
 ```
-
-## Stateful Function
-
-Knative Eventing Function may rely on external state.
-
-### Configuring Redis
-
-To use Redis as backing store, add this to `___config.json`:
-
-```json
-{
-  "redis": { ... options }
-}
-```
-
-
-
-
 
 
 
