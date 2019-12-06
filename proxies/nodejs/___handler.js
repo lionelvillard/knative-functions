@@ -7,6 +7,7 @@ const fn = require('./function')
 const dispatch = typeof fn !== 'function'
 
 const functionConfig = readFunctionConfig()
+const envParams = paramsfromenv()
 
 const redisClient = (functionConfig && functionConfig.redis) ? createRedisClient(functionConfig.redis) : null
 
@@ -43,7 +44,7 @@ async function handleRequest(req, res) {
     const httpParams = httptoparams(parsedurl)
 
     // Merge
-    context.params = { ...staticParams, ...httpParams }
+    context.params = { ...envParams, ...staticParams, ...httpParams }
 
     // Setup event handlers
     const body = []
@@ -115,6 +116,18 @@ function cetohttp(ce) {
             headers[`ce-${key}`] = ce[key]
         return headers
     }, {})
+}
+
+
+// Convert environment variable to default parameter values
+function paramsfromenv() {
+    const params = {}
+    for (const name in process.env) {
+        if (name.startsWith('P_')) {
+            params[name.substr(2).toLowerCase()] = process.env[name]
+        }
+    }
+    return params
 }
 
 

@@ -22,7 +22,7 @@ function cleanup {
         unset pid
     fi
 }
-trap cleanup ERR
+trap cleanup EXIT
 
 testname=${1:-}
 
@@ -134,6 +134,35 @@ if [[ -z $testname || "$testname" == "params" ]]; then
     fi
     printf "$CHECKMARK\n"
 
+
+    printf "should replace event data to be world"
+    resp=$(curl -s localhost:${PORT}?data=world -d '{}')
+    if [[ $resp != '"world"' ]]; then
+        u::fatal "unexpected response $resp"
+    fi
+    printf "$CHECKMARK\n"
+
+    kill $pid
+
+    env P_DATA=world node main.js &
+    pid=$!
+
+    sleep 1
+
+    printf "should replace event data to be world - from env"
+    resp=$(curl -s localhost:${PORT} -d '{}')
+    if [[ $resp != '"world"' ]]; then
+        u::fatal "unexpected response $resp"
+    fi
+    printf "$CHECKMARK\n"
+
+    printf "should replace event data to be world2 - from query"
+    resp=$(curl -s localhost:${PORT}?data=world2 -d '{}')
+    if [[ $resp != '"world2"' ]]; then
+        u::fatal "unexpected response $resp"
+    fi
+    printf "$CHECKMARK\n"
+
     kill $pid
 fi
 
@@ -236,3 +265,5 @@ if [[ -z $testname || "$testname" == "redis" ]]; then
     docker stop redis1  > /dev/null
     docker rm redis1 > /dev/null
 fi
+
+pid=
