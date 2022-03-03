@@ -1,0 +1,6 @@
+{
+  "name": "demo-static-binding",
+  "kone": {
+    "defaultBaseImage": "docker.io/knativefunctions/function"
+  }
+}

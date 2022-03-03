@@ -1,0 +1,9 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: parameters
+spec:
+  template:
+    spec:
+      containers:
+        - image: ../src # points to the directory containing package.json

@@ -10,14 +10,14 @@ It is designed:
 
 Let's start with the identity function:
 
-`function.js`:
+`main.js`:
 
 ```js
 module.exports = (context, event) => event
 ```
 
 The function:
-- must reside in the file named `function.js`.
+- must reside in the file named `main.js`.
 - must be exported.
 - should take a context and CloudEvent as input. The CloudEvent follows the [JSON Event Format](https://github.com/cloudevents/spec/blob/v1.0/json-format.md#json-event-format-for-cloudevents---version-10).
 -  can optionally return a CloudEvent. If it does the event is send back to the Knative Eventing system.
@@ -36,7 +36,7 @@ In order to deploy it, we need to tell `kone` what image name to give to the fun
 ```
 
 The base image handles most of the boilerplace code for us:
-- it loads our custom function stored in `function.js`
+- it loads our custom function stored in `main.js`
 - it tries to load [default parameter values](#default_parameter_value)
 - it starts an HTTP server listening for POST request on port 8080
 - and it converts HTTP requests to CloudEvents, back and forth.
