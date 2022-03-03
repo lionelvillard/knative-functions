@@ -18,4 +18,4 @@ set -e
 ROOT=$(dirname $BASH_SOURCE[0])/..
 source $ROOT/hack/lib/library.sh
 
-knative::send_event $1 $2
+knative::send_event $*

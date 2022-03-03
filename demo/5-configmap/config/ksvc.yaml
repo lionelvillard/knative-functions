@@ -1,0 +1,17 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: config
+spec:
+  template:
+    spec:
+      containers:
+        - image: ../src # points to the directory containing package.json
+          volumeMounts:
+          - name: config
+            mountPath: /ko-app/___config.json
+            subPath: config.json
+      volumes:
+        - name: config
+          configMap:
+            name: config  # name of the config map

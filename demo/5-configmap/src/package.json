@@ -1,0 +1,6 @@
+{
+  "name": "demo-config",
+  "kone": {
+    "defaultBaseImage": "docker.io/knativefunctions/function"
+  }
+}

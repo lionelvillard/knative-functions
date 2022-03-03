@@ -1,0 +1,6 @@
+{
+  "name": "demo-async",
+  "kone": {
+    "defaultBaseImage": "docker.io/knativefunctions/function"
+  }
+}
